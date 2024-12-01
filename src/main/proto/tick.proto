@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package com.dunkware.tick.proto;
+
+option java_multiple_files = true;
+option java_package = "com.dunkware.tick.proto";
+option java_outer_classname = "TickProto";
+
+import "google/protobuf/timestamp.proto";
+
+// Basic field types
+enum FieldType {
+  UNKNOWN = 0;
+  INTEGER = 1;
+  LONG = 2;
+  DOUBLE = 3;
+  TIMESTAMP = 4;
+  STRING = 5;
+}
+
+// Number format types
+enum NumberFormat {
+  DEFAULT = 0;
+  CURRENCY = 1;    // e.g., $1,234.56
+  PERCENT = 2;     // e.g., 12.34%
+  THOUSANDS = 3;   // e.g., 1,234
+  DECIMAL = 4;     // e.g., 1234.56
+}
+
+// Date/time format patterns
+enum TimeFormat {
+  TIME_DEFAULT = 0;
+  TIME_24H = 1;      // e.g., 14:30:00
+  TIME_12H = 2;      // e.g., 2:30:00 PM
+  DATE_SHORT = 3;    // e.g., 01/31/2024
+  DATE_MEDIUM = 4;   // e.g., Jan 31, 2024
+  DATE_LONG = 5;     // e.g., January 31, 2024
+  DATETIME_SHORT = 6;// e.g., 01/31/2024 14:30
+  DATETIME_LONG = 7; // e.g., January 31, 2024 14:30:00
+  ISO_8601 = 8;      // e.g., 2024-01-31T14:30:00Z
+}
+
+// Format specifications for fields
+message FormatSpec {
+  // Number formatting
+  optional NumberFormat number_format = 1;
+  optional string currency_code = 2;   // e.g., "USD", "EUR"
+  optional int32 decimal_places = 3;   // precision for decimal numbers
+  optional bool group_thousands = 4;   // whether to use thousand separators
+
+  // Date/Time formatting
+  optional TimeFormat time_format = 5;
+  optional string timezone = 6;        // e.g., "America/New_York"
+
+  // Custom format pattern (if standard formats don't suffice)
+  optional string custom_pattern = 7;  // e.g., "#,##0.000" or "yyyy-MM-dd"
+
+  // Locale for formatting (e.g., "en-US", "de-DE")
+  optional string locale = 8;
+}
+
+// Version information
+message Version {
+  int32 major = 1;
+  int32 minor = 2;
+  int32 patch = 3;
+}
+
+// Field definition
+message FieldDefinition {
+  int32 id = 1;
+  string name = 2;
+  FieldType type = 3;
+  bool required = 4;
+  string description = 5;
+  FormatSpec format = 6;
+  optional string display_name = 7;
+  optional string unit = 8;        // e.g., "shares", "contracts"
+  Version version = 9;
+}
+
+// Tick type definition
+message TickType {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  repeated FieldDefinition fields = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  Version version = 7;
+  string category = 8;            // e.g., "PRICE", "TRADE", "QUOTE"
+}
+
+// Field value
+message Field {
+  int32 id = 1;
+  oneof value {
+    int32 int_value = 2;
+    int64 long_value = 3;
+    double double_value = 4;
+    google.protobuf.Timestamp timestamp_value = 5;
+    string string_value = 6;
+  }
+}
+
+// Tick message
+message Tick {
+  int32 id = 1;
+  int32 type = 2;
+  repeated Field fields = 3;
+}
