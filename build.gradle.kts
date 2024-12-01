@@ -4,7 +4,8 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
 }
 
-group = "com.dunkware.part"
+
+group = "com.dunkware.tick"
 version = "0.1.0-SNAPSHOT"
 
 repositories {
@@ -63,6 +64,7 @@ publishing {
             from(components["java"])
             groupId = project.group.toString()
             version = project.version.toString()
+            artifactId = "tick-proto"
         }
     }
     repositories {
